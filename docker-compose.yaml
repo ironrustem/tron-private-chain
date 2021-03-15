@@ -1,0 +1,54 @@
+version: '3'
+
+networks:
+  tron-net:
+
+services:
+  # supernode:
+  #   container_name: supernode
+  #   image: gizmotronic/oracle-java:java8
+  #   command: nohup java -Xmx6g -XX:+HeapDumpOnOutOfMemoryError -jar FullNode.jar --witness -c supernode.conf
+  #   working_dir: /opt/tron
+  #   volumes:
+  #     - ./supernode:/opt/tron
+  #   networks:
+  #     - tron-net
+  #   ports:
+  #     - 16666:16666/udp
+  #     - 16666:16666/tcp
+  #     - 16667:16667
+  #     - 16668:16668
+  #     - 16669:16669
+
+  # fullnode:
+  #   container_name: fullnode
+  #   image: gizmotronic/oracle-java:java8
+  #   command: nohup java -Xmx6g -XX:+HeapDumpOnOutOfMemoryError -jar FullNode.jar -c fullnode.conf
+  #   working_dir: /opt/tron
+  #   volumes:
+  #     - ./fullnode:/opt/tron
+  #   networks:
+  #     - tron-net
+  #   ports:
+  #     - 26666:26666/udp
+  #     - 26666:26666/tcp
+  #     - 26667:26667
+  #     - 26668:26668
+  #     - 26669:26669
+  #   depends_on:
+  #     - supernode
+
+  aionode:
+    container_name: aionode
+    image: gizmotronic/oracle-java:java8
+    command: sh -c '/opt/tron/start-up.sh && tail -f /dev/null'
+    working_dir: /opt/tron
+    volumes:
+      - ./supernode:/opt/tron/supernode
+      - ./fullnode:/opt/tron/fullnode
+      - ./aionode/start-up.sh:/opt/tron/start-up.sh
+    networks:
+      - tron-net
+    ports:
+      - 26667:26667
+      - 26669:26669
